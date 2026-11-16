@@ -110,7 +110,7 @@ section { margin-top: 28px; }
   <div class="checkin" id="connectbox" hidden style="margin-top:12px">
     <p class="muted" style="line-height:1.6;margin-bottom:10px">Paste a GitHub key so this browser can save your ticks to <b id="csvpath"></b>.
     Make one at <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener" style="color:#8ab4ff">github.com → Fine-grained token</a>:
-    Repository access = only <b id="reponame"></b>, Permissions → Contents = Read and write. Each browser (PC, phone) needs it once.</p>
+    Repository access → Only select repositories → <b id="reponame"></b>; then under Permissions, in the Repositories box, Add permissions → Contents → Read and write. Each browser (PC, phone) needs it once.</p>
     <input class="note" id="token" type="password" placeholder="github_pat_…" autocomplete="off" style="margin-top:0">
     <div style="display:flex;gap:10px;margin-top:10px"><button class="tool" id="savetoken">Save key</button><button class="tool" id="forget">Forget key</button></div>
   </div>

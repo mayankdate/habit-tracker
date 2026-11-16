@@ -63,8 +63,13 @@ section { margin-top: 28px; }
 .streaks b { color: var(--text); }
 .hcals { display: flex; gap: 20px; flex-wrap: wrap; flex: 1; min-width: 0; }
 .mcal .mlabel { font-size: .68rem; color: var(--dim); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .07em; }
-.mgrid { display: grid; grid-template-columns: repeat(7, 15px); gap: 3px; }
-.mc { width: 15px; height: 15px; border-radius: 3px; background: var(--empty); border: 0; padding: 0; cursor: pointer; }
+.mgrid { display: grid; grid-template-columns: repeat(7, 24px); gap: 3px; }
+.mwd { font-size: .6rem; color: var(--dim); text-align: center; line-height: 14px; }
+.mwd.we { color: #7b8499; }
+.mc { width: 24px; height: 24px; border-radius: 4px; background: var(--empty); border: 0; padding: 0; cursor: pointer; font: inherit; font-size: .62rem; color: #7b8499; display: grid; place-items: center; }
+.mc.on { color: #0b0e14; font-weight: 600; }
+.mc.future, .mc.out { color: #3a4254; }
+.mc.today { outline: 1px solid var(--muted); outline-offset: 1px; }
 .mc.on { background: var(--c); }
 .mc.out { background: transparent; border: 1px dashed #2a3344; cursor: default; }
 .mc.future { background: transparent; border: 1px dashed #2a3344; cursor: default; }
@@ -439,15 +444,16 @@ function renderCheckin() {
 
 function monthCal(h, y, m) {
   const first = Date.UTC(y, m, 1) / MS, last = Date.UTC(y, m + 1, 0) / MS;
-  let cells = '<span></span>'.repeat(weekday(first));
+  let cells = ["M", "T", "W", "T", "F", "S", "S"].map((d, i) => `<span class="mwd${i > 4 ? " we" : ""}">${d}</span>`).join("")
+    + '<span></span>'.repeat(weekday(first));
   for (let n = first; n <= last; n++) {
     const cls = n > TODAY ? "future" : !activeOn(h, n) ? "out" : isDone(h.name, n) ? "on" : "";
-    const sel = n === selected ? " sel" : "";
+    const sel = (n === selected ? " sel" : "") + (n === TODAY ? " today" : "");
     const clickable = !cls.match(/future|out/);
     cells += `<button class="mc ${cls}${sel}" title="${fmt(n, { weekday: "short", month: "short", day: "numeric" })}"
-      ${clickable ? `data-habit="${esc(h.name)}" data-day="${n}"` : "disabled"}></button>`;
+      ${clickable ? `data-habit="${esc(h.name)}" data-day="${n}"` : "disabled"}>${n - first + 1}</button>`;
   }
-  return `<div class="mcal"><div class="mlabel">${fmt(first, { month: "short" })}</div><div class="mgrid">${cells}</div></div>`;
+  return `<div class="mcal"><div class="mlabel">${fmt(first, { month: "long", year: "numeric" })}</div><div class="mgrid">${cells}</div></div>`;
 }
 
 function calendars(h) {

@@ -14,9 +14,11 @@ The page needs a key to save your ticks.
 1. Open https://github.com/settings/personal-access-tokens/new
 2. Give it any name, for example `habit tracker`.
 3. Under Repository access, choose Only select repositories, then pick
-   `mayankdate/habit-tracker`.
-4. Under Permissions, open Repository permissions, find Contents and set it to
-   Read and write.
+   `mayankdate/habit-tracker` from the list.
+4. Under Permissions, a Repositories box now appears. Click its
+   Add permissions button, tick Contents, then change Contents from
+   Read-only to Read and write. (Metadata: Read-only is added by itself;
+   leave it. Leave the Account box empty.)
 5. Click Generate token and copy it.
 6. Open the tracker page and click Connect GitHub. Paste the token and click Save key.
 

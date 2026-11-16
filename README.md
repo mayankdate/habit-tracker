@@ -1,104 +1,94 @@
 # Habit Tracker
 
-A dashboard for a 3-month fitness challenge (Oct 1 – Dec 31, 2026). It reads a
-Notion database where each page is one day, computes per-habit streaks and
-completion rates, and publishes a static page to GitHub Pages as a home-tab
-motivator. A GitHub Action rebuilds and recommits the page twice every morning.
+Your habit tracker lives in the browser, here:
 
-## Habits tracked
+https://mayankdate.github.io/habit-tracker/
 
-Five habits, each with its own completion rule (no combined score). Gym and No
-Sugar are featured as priority habits.
+Tick what you did, and it saves itself to GitHub. There is nothing to build and
+no Notion token to look after any more.
 
-| Habit | Rule | Streak unit |
-|-------|------|-------------|
-| Gym | 5 days / week | weeks |
-| No Sugar | 6 days / week | weeks |
-| Good Diet | 5 days / week | weeks |
-| Abs | 4 days / week | weeks |
-| Jaw Line | 4 days / week | weeks |
+## One-time setup (once per browser or device)
 
-A **daily** habit must be done every day; its streak counts in days. A **weekly**
-habit needs N days within each Mon–Sun week; its streak counts in weeks and the
-card shows this week's progress (e.g. `4/5`). The in-progress day or week never
-breaks a streak — it stays pending until it actually falls short. Partial first
-and last weeks have their target prorated so a short edge week isn't an automatic
-miss.
+The page needs a key to save your ticks.
 
-The rules live in an editable `HABITS` block at the top of
-`scripts/build_dashboard.py` — change any target there without touching logic.
+1. Open https://github.com/settings/personal-access-tokens/new
+2. Give it any name, for example `habit tracker`.
+3. Under Repository access, choose Only select repositories, then pick
+   `mayankdate/habit-tracker`.
+4. Under Permissions, open Repository permissions, find Contents and set it to
+   Read and write.
+5. Click Generate token and copy it.
+6. Open the tracker page and click Connect GitHub. Paste the token and click Save key.
+
+The key stays in that browser only. Click Forget key on the page to remove it.
+Note: every Pages site under mayankdate.github.io shares one address, so any of
+them could read the key. That is why the key is limited to this one repo.
+
+## Every day
+
+1. Open the page.
+2. Tick the habits you did today. Add a note if you like.
+3. Look at the status line at the bottom. It says when the save is done (about
+   a second).
+
+To fill in an earlier day, click the ‹ arrow or the date picker, or click a
+square in the calendar. Then tick as usual.
+
+If you are offline or a save fails, your ticks stay in that browser and are
+tried again the next time you open the page. If two devices save at the same
+moment, the page reloads the file and puts your changes back on top.
+
+## What the numbers mean
+
+- The big number for each habit is the percent of its goal met.
+- Each Monday-to-Sunday week asks for the goal's number of days. A short
+  first or last week asks for less.
+- Extra days in one week do not make up for a missed week.
+- Today only counts once you have ticked it.
+- You see it for each challenge the habit is part of, for the habit's whole
+  life ("Since <start date>"), and for the last 30 days.
+- Streaks: daily habits count days, weekly habits count weeks met. The current
+  week never breaks a streak. Weekly habits also show this week's progress,
+  for example 3/5.
+- Each challenge card shows "day X of Y" and the average percent of its habits.
+
+## Changing habits and challenges
+
+Everything is in one settings file, `docs/habits.yaml`. Open it in VS Code.
+
+- A habit has a name, a start date (YYYY-MM-DD), an optional end date, a goal
+  (`daily` or `3 per week`, any number), and an optional color and star.
+- A challenge has a name, a start, an end, and an optional list of habits
+  (if you leave it out, it covers all habits).
+- To stop a habit, give it an end date. Do not delete it, so its history stays.
+
+Before editing, pull (Source Control → ... → Pull), because every tick adds a
+save on GitHub. After editing: save the file, then commit and push in VS Code. The page
+updates in about a minute. Refresh it.
+
+## Your data
+
+Check-ins are in `docs/checkins.csv`, one row per day: the date, a column per
+habit (1 means done), and a note. Your old Notion data (Oct 1 to 22, 2026) was
+copied in. Columns are matched by habit name, and old columns are kept.
+
+The repo is public, so the check-ins are public too.
 
 ## Project layout
 
 ```
 habit-tracker/
-├── .github/workflows/dashboard.yml   Scheduled build + commit
-├── docs/index.html                   The published page (generated)
+├── docs/
+│   ├── index.html            The whole app (written by hand, no build step)
+│   ├── habits.yaml           Settings: habits, challenges, where to save
+│   ├── checkins.csv          Your check-in data
+│   └── vendor/js-yaml.min.js Settings reader (js-yaml 4.1.0, MIT), bundled
 ├── scripts/
-│   ├── build_dashboard.py            Fetches Notion, writes docs/index.html
-│   └── inspect_notion.py             Diagnostic: prints a database's columns
-├── notion_habit_tracker_token.txt    Local token (gitignored, never pushed)
-├── pyproject.toml                    Python version + packages (managed with uv)
-├── uv.lock                           Exact versions; commit with pyproject.toml
+│   ├── folder_tree_builder.R Old helper that prints a folder tree
+│   └── cleangit.txt          Old git notes
+├── HabitTracker.code-workspace
+├── project_strucutre_basics.txt  Old notes
+├── pyproject.toml, uv.lock, .python-version  Left over, not used by the app
+├── CLAUDE.md                 Notes for AI assistants
 └── README.md
 ```
-
-## How it works
-
-`scripts/build_dashboard.py` fetches every day from the Notion database
-server-side, computes the stats, and writes a fully static `docs/index.html`.
-The token is used only during the build — it never appears in the page.
-
-Streaks and dates are computed in IST (a fixed UTC+05:30 offset). The current streak treats
-today as pending: an unchecked habit this morning won't reset the streak to
-zero, it counts the run ending yesterday until you check in.
-
-## One-time setup
-
-1. **Add the token as a secret.** Repo → Settings → Secrets and variables →
-   Actions → New repository secret. Name it exactly `NOTION_TOKEN` and paste the
-   same value that's in `notion_habit_tracker_token.txt`.
-2. **Enable Pages.** Settings → Pages → Source: Deploy from a branch →
-   Branch `main`, folder `/docs`. The site will be at
-   `https://<username>.github.io/habit-tracker/`.
-3. **First build.** Actions → "Build habit dashboard" → Run workflow. (Or run
-   it locally once and commit the generated `docs/index.html`.)
-
-After that the two daily schedules keep it up to date.
-
-## Schedule
-
-GitHub cron runs in UTC. The workflow fires at:
-
-- `57 21 * * *` → 03:27 IST
-- `57 2 * * *`  → 08:27 IST
-
-Two runs because GitHub's scheduler can run late or skip one under load — the
-second catches a missed first.
-
-## Running locally
-
-```
-uv run python scripts/build_dashboard.py
-```
-
-([uv](https://docs.astral.sh/uv/) picks the Python version from `.python-version`
-and installs it if needed. The script uses only the standard library.)
-
-Reads the token from the `NOTION_TOKEN` environment variable, or from
-`notion_habit_tracker_token.txt` in the project root. Writes `docs/index.html`,
-which you can open in a browser.
-
-To check the database's columns (e.g. after changing the schema):
-
-```
-uv run python scripts/inspect_notion.py
-```
-
-## Notes
-
-- **The repo is public, so the habit data on the page is public.**
-- The Notion data source ID is set as a constant in `build_dashboard.py`. If you
-  rebuild the database, update it there.
-- The scripts need no third-party packages — only the Python standard library
-  (Python 3).

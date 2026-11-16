@@ -1,0 +1,60 @@
+# Habit tracker settings.
+# Edit this file, save it, push it (Git), then refresh the page.
+# Lines starting with # are notes and are ignored.
+
+title: My Habits
+
+# ---- Habits -------------------------------------------------------------
+# Each habit needs a name, a start date and a goal.
+#   start:  the first day it counts (YYYY-MM-DD)
+#   end:    optional last day. Leave it out to keep tracking.
+#   goal:   "daily", or "5 per week" (any number of days, Mon-Sun weeks)
+#   color:  optional, any web colour like "#ff6b4a"
+#   star:   optional, true marks a priority habit
+# To stop tracking a habit, give it an end date rather than deleting it,
+# so its history and percentages stay on the page.
+
+habits:
+  - name: Gym
+    start: 2026-10-01
+    goal: 5 per week
+    color: "#ff6b4a"
+    star: true
+
+  - name: No Sugar
+    start: 2026-10-01
+    goal: 6 per week
+    color: "#ffd23f"
+    star: true
+
+  - name: Good Diet
+    start: 2026-10-01
+    goal: 5 per week
+    color: "#4ade80"
+
+  - name: Abs
+    start: 2026-10-01
+    goal: 4 per week
+    color: "#f472b6"
+
+  - name: Jaw Line
+    start: 2026-10-01
+    goal: 4 per week
+    color: "#a78bfa"
+
+# ---- Challenges ---------------------------------------------------------
+# A challenge is a stretch of days you want to score separately.
+# Every habit gets its own % for each challenge it overlaps.
+#   habits: optional list of names. Leave it out to include every habit.
+
+challenges:
+  - name: 3-Month Challenge
+    start: 2026-10-01
+    end: 2026-12-31
+
+# ---- Saving ticks -------------------------------------------------------
+# Ticks are saved to this CSV file in this GitHub repository.
+github:
+  repo: mayankdate/habit-tracker
+  branch: main
+  file: docs/checkins.csv

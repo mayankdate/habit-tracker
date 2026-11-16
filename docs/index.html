@@ -457,16 +457,22 @@ function monthCal(h, y, m) {
 }
 
 function calendars(h) {
-  // up to 4 months, ending at this month (or the habit's end), not before the habit started
-  const endN = Math.min(h.end ?? TODAY, TODAY);
-  const e = new Date(endN * MS), s = new Date(h.start * MS);
-  let y = e.getUTCFullYear(), m = e.getUTCMonth();
-  const out = [];
-  for (let i = 0; i < 4; i++) {
-    if (y < s.getUTCFullYear() || (y === s.getUTCFullYear() && m < s.getUTCMonth())) break;
-    out.unshift(monthCal(h, y, m));
-    if (--m < 0) { m = 11; y--; }
+  const ym = n => { const d = new Date(n * MS); return d.getUTCFullYear() * 12 + d.getUTCMonth(); };
+  // a running challenge that includes this habit: draw every month of it, future ones too
+  const live = challenges.filter(c => c.start <= TODAY && TODAY <= c.end && (!c.habits || c.habits.includes(h.name))
+                                      && h.start <= c.end && (h.end == null || h.end >= c.start));
+  let from, to;
+  if (live.length) {
+    from = Math.min(...live.map(c => ym(c.start)));
+    to = Math.max(...live.map(c => ym(c.end)));
+    from = Math.max(from, to - 11); // at most a year of months
+  } else {
+    // otherwise up to 4 months, ending at this month (or the habit's end), not before the habit started
+    to = ym(Math.min(h.end ?? TODAY, TODAY));
+    from = Math.max(ym(h.start), to - 3);
   }
+  const out = [];
+  for (let k = from; k <= to; k++) out.push(monthCal(h, Math.floor(k / 12), k % 12));
   return out.join("");
 }
 
